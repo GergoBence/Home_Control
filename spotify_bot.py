@@ -66,11 +66,12 @@ def normalize_text(text):
     )
 
 
-def press_media_key(key):
+def press_media_key(key, presses=1):
     """Windows médialejátszó vezérlése."""
     try:
-        pyautogui.press(key)
-        print(f"Médiavezérlés: {key}")
+        for _ in range(presses):
+            pyautogui.press(key)
+        print(f"Médiavezérlés: {key} (ismétlés: {presses})")
 
     except Exception as error:
         print(f"Médiavezérlési hiba: {error}")
@@ -117,6 +118,34 @@ def handle_recognized_text(text):
         "allitsd meg"
     )):
         press_media_key("playpause")
+        return
+
+    # Hangerő növelése
+    if any(word in normalized for word in (
+        "hangos",
+        "hang fel",
+        "hangosabb",
+        "hangosabban",
+        "hangero fel",
+        "noveld a hangot",
+        "vol up",
+        "volume up"
+    )):
+        press_media_key("volumeup", presses=5)
+        return
+
+    # Hangerő csökkentése
+    if any(word in normalized for word in (
+        "halk",
+        "hang le",
+        "halkabb",
+        "halkabban",
+        "hangero le",
+        "vedd le a hangot",
+        "vol down",
+        "volume down"
+    )):
+        press_media_key("volumedown", presses=5)
         return
 
     print(f"Nem ismert parancs: {text}")
@@ -397,6 +426,15 @@ async def play_command(ctx):
     press_media_key("playpause")
     await ctx.send("Lejátszás / szünet.")
 
+@client.command(name="up")
+async def volume_up_command(ctx):
+    press_media_key("volumeup")
+    await ctx.send("Hangerő növelve.")
+
+@client.command(name="down")
+async def volume_down_command(ctx):
+    press_media_key("volumedown")
+    await ctx.send("Hangerő csökkentve.")
 
 # ============================================================
 # ESEMÉNYEK
