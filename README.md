@@ -1,1 +1,1 @@
-Discord alapó bot
+Discord alapú bot
